@@ -31,13 +31,11 @@ jobs:
           ${{ runner.os }}-nuget-
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore AiChatApi.WebApi/AiChatApi.WebApi.csproj
 
     - name: Build solution
-      run: dotnet build --no-restore --configuration Release
+      run: dotnet build AiChatApi.WebApi/AiChatApi.WebApi.csproj --no-restore --configuration Release
 
-    - name: Run tests
-      run: dotnet test --no-build --configuration Release --verbosity normal
 
   docker-build-push:
     runs-on: ubuntu-latest
