@@ -1,0 +1,88 @@
+name: Deploy to Server
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types: [completed]
+    branches: [ master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        port: ${{ secrets.SERVER_PORT || 22 }}
+        script: |
+          # Set variables
+          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/aichatapi"
+          CONTAINER_NAME="aichatapi-webapi"
+          PORT="8080"
+          
+          # Login to Docker Hub
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          
+          # Pull the latest image
+          docker pull $IMAGE_NAME:latest
+          
+          # Stop and remove existing container if it exists
+          if [ $(docker ps -q -f name=$CONTAINER_NAME) ]; then
+            echo "Stopping existing container..."
+            docker stop $CONTAINER_NAME
+          fi
+          
+          if [ $(docker ps -aq -f name=$CONTAINER_NAME) ]; then
+            echo "Removing existing container..."
+            docker remove $CONTAINER_NAME
+          fi
+          
+          # Run the new container
+          echo "Starting new container..."
+          docker run -d \
+            --name $CONTAINER_NAME \
+            --restart unless-stopped \
+            -p $PORT:8080 \
+            -e ASPNETCORE_ENVIRONMENT=Production \
+            -e ConnectionStrings__DefaultConnection="${{ secrets.CONNECTION_STRING }}" \
+            -e Ollama__BaseUrl="${{ secrets.OLLAMA_BASE_URL }}" \
+            $IMAGE_NAME:latest
+          
+          # Clean up old images
+          echo "Cleaning up old images..."
+          docker image prune -f
+          
+          # Show running containers
+          echo "Current running containers:"
+          docker ps
+          
+          # Health check
+          echo "Waiting for application to start..."
+          sleep 10
+          
+          # Check if the application is responding
+          if curl -f http://localhost:$PORT/health || curl -f http://localhost:$PORT/; then
+            echo "✅ Application deployed successfully!"
+          else
+            echo "❌ Application health check failed!"
+            docker logs $CONTAINER_NAME
+            exit 1
+          fi
+
+    - name: Notify deployment status
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ Deployment completed successfully!"
+        else
+          echo "❌ Deployment failed!"
+        fi

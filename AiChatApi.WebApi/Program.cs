@@ -28,6 +28,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+
+// Add health check endpoint
+app.MapGet("/health", () => new { Status = "Healthy", Timestamp = DateTime.UtcNow })
+    .WithName("HealthCheck")
+    .WithTags("Health");
+
 app.UseHttpsRedirection();
 
 await app.RunAsync();
