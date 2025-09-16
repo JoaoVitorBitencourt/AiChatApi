@@ -1,0 +1,15 @@
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/bin/Debug/net9.0/AiChatApi.Infrastructure.deps.json
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/bin/Debug/net9.0/AiChatApi.Infrastructure.dll
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/bin/Debug/net9.0/AiChatApi.Infrastructure.pdb
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/bin/Debug/net9.0/AiChatApi.Domain.dll
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/bin/Debug/net9.0/AiChatApi.Domain.pdb
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/obj/Debug/net9.0/AiChatApi.Infrastructure.csproj.AssemblyReference.cache
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/obj/Debug/net9.0/AiChatApi.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/obj/Debug/net9.0/AiChatApi.Infrastructure.AssemblyInfoInputs.cache
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/obj/Debug/net9.0/AiChatApi.Infrastructure.AssemblyInfo.cs
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/obj/Debug/net9.0/AiChatApi.Infrastructure.csproj.CoreCompileInputs.cache
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/obj/Debug/net9.0/AiChatAp.0A9A8B4C.Up2Date
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/obj/Debug/net9.0/AiChatApi.Infrastructure.dll
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/obj/Debug/net9.0/refint/AiChatApi.Infrastructure.dll
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/obj/Debug/net9.0/AiChatApi.Infrastructure.pdb
+/home/joao/Projects/AiChatApi/AiChatApi.Infrastructure/obj/Debug/net9.0/ref/AiChatApi.Infrastructure.dll

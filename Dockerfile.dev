@@ -1,0 +1,24 @@
+# Development Dockerfile with hot reload
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS development
+WORKDIR /src
+
+# Copy solution and project files for restore
+COPY AiChatApi.sln ./
+COPY AiChatApi.Domain/AiChatApi.Domain.csproj ./AiChatApi.Domain/
+COPY AiChatApi.Infrastructure/AiChatApi.Infrastructure.csproj ./AiChatApi.Infrastructure/
+COPY AiChatApi.WebApi/AiChatApi.WebApi.csproj ./AiChatApi.WebApi/
+
+# Restore dependencies
+RUN dotnet restore
+
+# Expose ports
+EXPOSE 5053 7053
+
+# Set environment
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV ASPNETCORE_URLS=http://+:5053;https://+:7053
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
+ENV DOTNET_WATCH_SUPPRESS_MSBUILD_INCREMENTALISM=true
+
+# Run with hot reload (source code will be mounted as volume)
+ENTRYPOINT ["dotnet", "watch", "--project", "AiChatApi.WebApi/AiChatApi.WebApi.csproj", "--urls", "http://+:5053;https://+:7053"]
