@@ -21,8 +21,7 @@ public static class ServiceCollectionExtensions
 
         // Add Ollama service
         var ollamaBaseUrl = configuration["Ollama:BaseUrl"] ?? "http://localhost:11434";
-        var ollamaModel = configuration["Ollama:DefaultModel"] ?? "llama3.2";
-        services.AddSingleton<IOllamaService>(provider => new OllamaService(ollamaBaseUrl, ollamaModel));
+        services.AddSingleton<IOllamaService>(provider => new OllamaService(ollamaBaseUrl));
 
         return services;
     }

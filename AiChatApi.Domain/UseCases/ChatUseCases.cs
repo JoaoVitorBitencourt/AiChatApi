@@ -43,7 +43,7 @@ public class ChatUseCases
         if (role != "user") return message;
         
         var conversationHistory = await _chatRepository.GetMessagesBySessionIdAsync(sessionId);
-        var aiResponse = await _ollamaService.GenerateResponseAsync(conversationHistory, "assistant");
+        var aiResponse = await _ollamaService.GenerateResponseAsync(conversationHistory);
             
         var aiMessage = new ChatMessage
         {
@@ -56,7 +56,7 @@ public class ChatUseCases
 
         await _chatRepository.AddMessageAsync(aiMessage);
 
-        return message;
+        return aiMessage;
     }
 
     public async Task<IEnumerable<ChatMessage>> GetSessionMessagesAsync(Guid sessionId)

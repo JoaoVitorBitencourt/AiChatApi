@@ -10,12 +10,10 @@ namespace AiChatApi.Infrastructure.Services;
 public class OllamaService : IOllamaService
 {
     private readonly OllamaApiClient _ollamaClient;
-    private readonly string _defaultModel;
 
-    public OllamaService(string baseUrl = "http://localhost:11434", string defaultModel = "llama3.2")
+    public OllamaService(string baseUrl = "http://localhost:11434")
     {
         _ollamaClient = new OllamaApiClient(baseUrl);
-        _defaultModel = defaultModel;
     }
 
     public async Task<string> GenerateResponseAsync(string prompt, string model = "llama3.2")
@@ -55,13 +53,14 @@ public class OllamaService : IOllamaService
             Prompt = messages.Select(x => x.Content).Last() ?? ""
         });
         
-        var response = string.Empty;
+        var builder = new StringBuilder();
         await foreach (var stream in chat)
         {
-            response = stream?.Response;
+            builder.Append(stream?.Response ?? string.Empty);
         }
+        var response = builder.ToString();
 
-        return response ?? string.Empty;
+        return response;
     }
 
     public async Task StreamResponseAsync(IEnumerable<ChatMessage> conversationHistory, Stream outputStream, string model = "llama3.2")

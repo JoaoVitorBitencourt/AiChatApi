@@ -1,6 +1,54 @@
-@AiChatApi.WebApi_HostAddress = http://localhost:5136
+@WebApi_HostAddress = http://localhost:5053
 
-GET {{AiChatApi.WebApi_HostAddress}}/weatherforecast/
+GET {{WebApi_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+# Chat API Requests
+
+### 1. Create a new chat session
+POST {{WebApi_HostAddress}}/api/chat/sessions
+Content-Type: application/json
+
+{
+  "title": "My First Conversation"
+}
+
+###
+
+### 2. Send a message to the session (replace {sessionId} with the ID from step 1)
+# @name sendMessage
+POST {{WebApi_HostAddress}}/api/chat/sessions/{sessionId}/messages
+Content-Type: application/json
+
+{
+  "content": "how are you?"
+}
+
+###
+
+### 3. Get all messages from the session
+GET {{WebApi_HostAddress}}/api/chat/sessions/{sessionId}/messages
+Accept: application/json
+
+###
+
+### 4. Get all sessions
+GET {{WebApi_HostAddress}}/api/chat/sessions
+Accept: application/json
+
+###
+
+### 5. Stream a message (real-time response)
+POST {{WebApi_HostAddress}}/api/chat/sessions/{sessionId}/stream
+Content-Type: application/json
+
+{
+  "content": "Tell me a short story"
+}
+
+###
+
+### 6. Delete a session
+DELETE {{WebApi_HostAddress}}/api/chat/sessions/{sessionId}
