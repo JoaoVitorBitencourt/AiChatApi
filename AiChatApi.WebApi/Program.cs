@@ -16,6 +16,17 @@ builder.Services.Configure<RouteOptions>(options =>
     options.LowercaseUrls = true;
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 // Add Use Cases
 builder.Services.AddScoped<ChatUseCases>();
 
@@ -28,6 +39,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+app.UseCors();
 
 // Add health check endpoint
 app.MapGet("/health", () => new { Status = "Healthy", Timestamp = DateTime.UtcNow })

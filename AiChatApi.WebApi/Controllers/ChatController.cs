@@ -118,6 +118,91 @@ public class ChatController : ControllerBase
         }
     }
 
+    [HttpPost("sessions/{sessionId:guid}/files")]
+    public async Task<IActionResult> SendFileMessage(Guid sessionId, [FromForm] SendFileMessageRequest request)
+    {
+        try
+        {
+            if (request.File == null || request.File.Length == 0)
+            {
+                return BadRequest("No file provided");
+            }
+
+            // Validate file type (you can extend this for more file types)
+            var allowedExtensions = new[] { ".pdf", ".txt", ".docx", ".doc" };
+            var fileExtension = Path.GetExtension(request.File.FileName).ToLowerInvariant();
+            
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                return BadRequest($"File type {fileExtension} is not supported. Allowed types: {string.Join(", ", allowedExtensions)}");
+            }
+
+            // Validate file size (e.g., max 10MB)
+            const long maxFileSize = 10 * 1024 * 1024; // 10MB
+            if (request.File.Length > maxFileSize)
+            {
+                return BadRequest($"File size exceeds maximum allowed size of {maxFileSize / (1024 * 1024)}MB");
+            }
+
+            var message = await _chatUseCases.SendFileMessageAsync(sessionId, request.Message, request.File);
+            return Ok(message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error sending file message to session {SessionId}", sessionId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpPost("sessions/{sessionId:guid}/files/stream")]
+    public async Task StreamFileMessage(Guid sessionId, [FromForm] SendFileMessageRequest request)
+    {
+        try
+        {
+            if (request.File == null || request.File.Length == 0)
+            {
+                Response.StatusCode = 400;
+                await Response.WriteAsync("No file provided");
+                return;
+            }
+
+            // Validate file type
+            var allowedExtensions = new[] { ".pdf", ".txt", ".docx", ".doc" };
+            var fileExtension = Path.GetExtension(request.File.FileName).ToLowerInvariant();
+            
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                Response.StatusCode = 400;
+                await Response.WriteAsync($"File type {fileExtension} is not supported. Allowed types: {string.Join(", ", allowedExtensions)}");
+                return;
+            }
+
+            // Validate file size
+            const long maxFileSize = 10 * 1024 * 1024; // 10MB
+            if (request.File.Length > maxFileSize)
+            {
+                Response.StatusCode = 400;
+                await Response.WriteAsync($"File size exceeds maximum allowed size of {maxFileSize / (1024 * 1024)}MB");
+                return;
+            }
+
+            Response.Headers.Append("Content-Type", "text/plain; charset=utf-8");
+            Response.Headers.Append("Cache-Control", "no-cache");
+            Response.Headers.Append("Connection", "keep-alive");
+            
+            // Stream AI response with file content
+            await _chatUseCases.StreamFileMessageAsync(sessionId, request.Message, request.File, Response.Body);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error streaming file message to session {SessionId}", sessionId);
+            if (!Response.HasStarted)
+            {
+                Response.StatusCode = 500;
+            }
+        }
+    }
+
     [HttpDelete("sessions/{sessionId:guid}")]
     public async Task<IActionResult> DeleteSession(Guid sessionId)
     {

@@ -23,6 +23,9 @@ public static class ServiceCollectionExtensions
         var ollamaBaseUrl = configuration["Ollama:BaseUrl"] ?? "http://localhost:11434";
         services.AddSingleton<IOllamaService>(provider => new OllamaService(ollamaBaseUrl));
 
+        // Add PDF service
+        services.AddSingleton<IPdfService, PdfService>();
+
         return services;
     }
 }

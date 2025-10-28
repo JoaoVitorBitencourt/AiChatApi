@@ -13,6 +13,14 @@ services:
     networks:
       - aichatapi-network
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-dev
+    ports:
+      - "11434:11434"
+  networks:
+      - aichatapi-network
+
   api:
     build: .
     container_name: aichatapi-webapi

@@ -79,13 +79,11 @@ public class OllamaService : IOllamaService
 
         await foreach (var stream in chat)
         {
-            if (stream?.Message?.Content != null)
-            {
-                var content = stream.Message.Content;
-                var bytes = Encoding.UTF8.GetBytes(content);
-                await outputStream.WriteAsync(bytes, 0, bytes.Length);
-                await outputStream.FlushAsync();
-            }
+            if (stream?.Message?.Content == null) continue;
+            var content = stream.Message.Content;
+            var bytes = Encoding.UTF8.GetBytes(content);
+            await outputStream.WriteAsync(bytes);
+            await outputStream.FlushAsync();
         }
     }
 }

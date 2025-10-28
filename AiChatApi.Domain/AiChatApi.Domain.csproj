@@ -8,6 +8,16 @@
 
   <ItemGroup>
     <PackageReference Include="OllamaSharp" Version="5.4.1" />
+    <PackageReference Include="UglyToad.PdfPig" Version="1.7.0-custom-5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Http.Features">
+      <HintPath>..\..\..\..\..\nix\store\gydpsi918ix7zfa8x6mfh06n4z64qw63-dotnet-sdk-9.0.306\share\dotnet\shared\Microsoft.AspNetCore.App\9.0.10\Microsoft.AspNetCore.Http.Features.dll</HintPath>
+    </Reference>
+    <Reference Include="UglyToad.PdfPig">
+      <HintPath>..\..\..\.nuget\packages\uglytoad.pdfpig\1.7.0-custom-5\lib\net6.0\UglyToad.PdfPig.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

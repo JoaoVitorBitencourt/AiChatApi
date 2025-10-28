@@ -52,3 +52,43 @@ Content-Type: application/json
 
 ### 6. Delete a session
 DELETE {{WebApi_HostAddress}}/api/chat/sessions/{sessionId}
+
+###
+
+### 7. Send a file with message (e.g., translate a PDF)
+# Note: This is a multipart/form-data request
+# You need to replace {sessionId} with an actual session ID
+# You need to replace the file path with an actual file path
+POST {{WebApi_HostAddress}}/api/chat/sessions/{sessionId}/files
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="Message"
+
+Please translate this document to English
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="File"; filename="document.pdf"
+Content-Type: application/pdf
+
+< ./path/to/your/document.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+### 8. Stream a file with message (real-time response)
+# Note: This is a multipart/form-data request
+# You need to replace {sessionId} with an actual session ID
+# You need to replace the file path with an actual file path
+POST {{WebApi_HostAddress}}/api/chat/sessions/{sessionId}/files/stream
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="Message"
+
+Please summarize this document
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="File"; filename="document.txt"
+Content-Type: text/plain
+
+< ./path/to/your/document.txt
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
