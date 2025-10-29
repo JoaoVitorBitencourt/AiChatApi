@@ -54,18 +54,6 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=sha,prefix={{branch}}-
-          type=raw,value=latest,enable={{is_default_branch}}
-          type=raw,value={{version}},enable={{is_tag}}
-
     - name: Build and push Docker image
       id: build
       uses: docker/build-push-action@v5
@@ -73,11 +61,8 @@ jobs:
         context: .
         file: ./Dockerfile
         push: ${{ github.event_name == 'push' }}
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        platforms: linux/amd64,linux/arm64
+        tags: joaovitor778/aichatapi:latest
+        platforms: linux/arm64/v8
 
     - name: Output image details
       if: github.event_name == 'push'
