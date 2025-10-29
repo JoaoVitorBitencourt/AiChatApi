@@ -1,6 +1,5 @@
 using AiChatApi.Domain.Entities;
 using AiChatApi.Domain.Interfaces;
-using Microsoft.AspNetCore.Http;
 using System.Text;
 using UglyToad.PdfPig;
 
@@ -103,13 +102,13 @@ public class ChatUseCases
         await _ollamaService.StreamResponseAsync(conversationHistory, outputStream);
     }
 
-    public async Task<ChatMessage> SendFileMessageAsync(Guid sessionId, string message, IFormFile file)
+    public async Task<ChatMessage> SendFileMessageAsync(Guid sessionId, string message, Stream fileStream, string fileName)
     {
         // Extract text content from file
-        var fileContent = await ExtractTextFromFileAsync(file);
+        var fileContent = await ExtractTextFromFileAsync(fileStream, fileName);
         
         // Combine user message with file content
-        var combinedContent = $"{message}\n\nFile: {file.FileName}\nContent:\n{fileContent}";
+        var combinedContent = $"{message}\n\nFile: {fileName}\nContent:\n{fileContent}";
 
         // Save user message with file content
         var userMessage = new ChatMessage
@@ -143,13 +142,13 @@ public class ChatUseCases
         return aiMessage;
     }
 
-    public async Task StreamFileMessageAsync(Guid sessionId, string message, IFormFile file, Stream outputStream)
+    public async Task StreamFileMessageAsync(Guid sessionId, string message, Stream fileStream, string fileName, Stream outputStream)
     {
         // Extract text content from file
-        var fileContent = await ExtractTextFromFileAsync(file);
+        var fileContent = await ExtractTextFromFileAsync(fileStream, fileName);
         
         // Combine user message with file content
-        var combinedContent = $"{message}\n\nFile: {file.FileName}\nContent:\n{fileContent}";
+        var combinedContent = $"{message}\n\nFile: {fileName}\nContent:\n{fileContent}";
 
         // Save user message with file content
         var userMessage = new ChatMessage
@@ -170,18 +169,16 @@ public class ChatUseCases
         await _ollamaService.StreamResponseAsync(conversationHistory, outputStream);
     }
 
-    private async Task<string> ExtractTextFromFileAsync(IFormFile file)
+    private async Task<string> ExtractTextFromFileAsync(Stream fileStream, string fileName)
     {
-        var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-        await using var stream = file.OpenReadStream();
+        var fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
         
         return fileExtension switch
         {
-            ".txt" => await ExtractTextFromTxtAsync(stream),
-            ".pdf" => await ExtractTextFromPdfAsync(stream),
-            ".docx" => await ExtractTextFromDocxAsync(stream),
-            ".doc" => await ExtractTextFromDocAsync(stream),
+            ".txt" => await ExtractTextFromTxtAsync(fileStream),
+            ".pdf" => await ExtractTextFromPdfAsync(fileStream),
+            ".docx" => await ExtractTextFromDocxAsync(fileStream),
+            ".doc" => await ExtractTextFromDocAsync(fileStream),
             _ => throw new NotSupportedException($"File type {fileExtension} is not supported for text extraction")
         };
     }

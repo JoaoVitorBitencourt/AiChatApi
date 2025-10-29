@@ -123,7 +123,7 @@ public class ChatController : ControllerBase
     {
         try
         {
-            if (request.File == null || request.File.Length == 0)
+            if (request.File == null)
             {
                 return BadRequest("No file provided");
             }
@@ -137,14 +137,7 @@ public class ChatController : ControllerBase
                 return BadRequest($"File type {fileExtension} is not supported. Allowed types: {string.Join(", ", allowedExtensions)}");
             }
 
-            // Validate file size (e.g., max 10MB)
-            const long maxFileSize = 10 * 1024 * 1024; // 10MB
-            if (request.File.Length > maxFileSize)
-            {
-                return BadRequest($"File size exceeds maximum allowed size of {maxFileSize / (1024 * 1024)}MB");
-            }
-
-            var message = await _chatUseCases.SendFileMessageAsync(sessionId, request.Message, request.File);
+            var message = await _chatUseCases.SendFileMessageAsync(sessionId, request.Message, request.File.OpenReadStream(), request.File.FileName);
             return Ok(message);
         }
         catch (Exception ex)
@@ -159,7 +152,7 @@ public class ChatController : ControllerBase
     {
         try
         {
-            if (request.File == null || request.File.Length == 0)
+            if (request.File == null)
             {
                 Response.StatusCode = 400;
                 await Response.WriteAsync("No file provided");
@@ -177,21 +170,12 @@ public class ChatController : ControllerBase
                 return;
             }
 
-            // Validate file size
-            const long maxFileSize = 10 * 1024 * 1024; // 10MB
-            if (request.File.Length > maxFileSize)
-            {
-                Response.StatusCode = 400;
-                await Response.WriteAsync($"File size exceeds maximum allowed size of {maxFileSize / (1024 * 1024)}MB");
-                return;
-            }
-
             Response.Headers.Append("Content-Type", "text/plain; charset=utf-8");
             Response.Headers.Append("Cache-Control", "no-cache");
             Response.Headers.Append("Connection", "keep-alive");
             
             // Stream AI response with file content
-            await _chatUseCases.StreamFileMessageAsync(sessionId, request.Message, request.File, Response.Body);
+            await _chatUseCases.StreamFileMessageAsync(sessionId, request.Message, request.File.OpenReadStream(), request.File.FileName, Response.Body);
         }
         catch (Exception ex)
         {
