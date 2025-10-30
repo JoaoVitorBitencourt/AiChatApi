@@ -62,7 +62,7 @@ jobs:
         file: ./Dockerfile
         push: ${{ github.event_name == 'push' }}
         tags: joaovitor778/aichatapi:latest
-        platforms: linux/arm64/v8
+        platforms: linux/arm64/v8,linux/amd64
 
     - name: Output image details
       if: github.event_name == 'push'
